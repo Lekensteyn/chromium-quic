@@ -343,9 +343,9 @@ class QuicTestPacketMaker {
     save_packet_frames_ = save_packet_frames;
   }
 
-  std::vector<std::string> QpackEncodeHeaders(quic::QuicStreamId stream_id,
-                                              spdy::SpdyHeaderBlock headers,
-                                              size_t* encoded_data_length);
+  std::string QpackEncodeHeaders(quic::QuicStreamId stream_id,
+                                 spdy::SpdyHeaderBlock headers,
+                                 size_t* encoded_data_length);
 
  private:
   // QpackEncoder::DecoderStreamErrorDelegate implementation that does nothing

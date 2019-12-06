@@ -276,7 +276,7 @@ QUIC_FLAG(int32_t,
 
 // If true, Adjacent stream frames will be combined into one stream frame before
 // the packet is serialized.
-QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_coalesce_stream_frames_2, false)
+QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_coalesce_stream_frames_2, true)
 
 // If true, connection will be closed if a stream receives stream frame or
 // RESET_STREAM frame with bad close offset.

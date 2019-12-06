@@ -1335,11 +1335,8 @@ TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {
   std::string response_data;
   if (quic::VersionUsesHttp3(version_.transport_version)) {
     stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
-    std::vector<std::string> encoded = server_maker_.QpackEncodeHeaders(
+    response_data = server_maker_.QpackEncodeHeaders(
         stream_id, std::move(response_headers), nullptr);
-    for (const auto& e : encoded) {
-      response_data += e;
-    }
   } else {
     stream_id = quic::QuicUtils::GetHeadersStreamId(version_.transport_version);
     spdy::SpdyHeadersIR headers_frame(
@@ -1414,11 +1411,8 @@ TEST_P(QuicNetworkTransactionTest, TooLargeResponseHeaders) {
   std::string response_data;
   if (quic::VersionUsesHttp3(version_.transport_version)) {
     stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
-    std::vector<std::string> encoded = server_maker_.QpackEncodeHeaders(
+    response_data = server_maker_.QpackEncodeHeaders(
         stream_id, std::move(response_headers), nullptr);
-    for (const auto& e : encoded) {
-      response_data += e;
-    }
   } else {
     stream_id = quic::QuicUtils::GetHeadersStreamId(version_.transport_version);
     spdy::SpdyHeadersIR headers_frame(
@@ -8085,9 +8079,9 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   } else {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        ConstructClientAckAndMultipleDataFramesPacket(
+        ConstructClientAckAndDataPacket(
             packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
-            1, 1, 1, false, {header, std::string(get_request)}));
+            1, 1, 1, false, {header + std::string(get_request)}));
   }
 
   const char get_response[] =
@@ -8181,10 +8175,10 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
   } else {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        ConstructClientAckAndMultipleDataFramesPacket(
+        ConstructClientAckAndDataPacket(
             packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
             1, 1, 1, false,
-            {header, std::string(get_frame.data(), get_frame.size())}));
+            {header + std::string(get_frame.data(), get_frame.size())}));
   }
   spdy::SpdySerializedFrame resp_frame =
       spdy_util.ConstructSpdyGetReply(nullptr, 0, 1);
@@ -8281,10 +8275,10 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
                          false, quic::QuicStringPiece(get_request_1)));
   } else {
     mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructClientAckAndMultipleDataFramesPacket(
+        SYNCHRONOUS, ConstructClientAckAndDataPacket(
                          write_packet_index++, false,
                          GetNthClientInitiatedBidirectionalStreamId(0), 1, 1, 1,
-                         false, {header, std::string(get_request_1)}));
+                         false, {header + std::string(get_request_1)}));
   }
 
   const char get_response_1[] =
@@ -8315,9 +8309,9 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
   if (version_.transport_version == quic::QUIC_VERSION_99) {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        ConstructClientMultipleDataFramesPacket(
+        ConstructClientDataPacket(
             write_packet_index++, GetNthClientInitiatedBidirectionalStreamId(0),
-            false, false, {header4, std::string(get_request_2)}));
+            false, false, {header4 + std::string(get_request_2)}));
   } else {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
@@ -8437,9 +8431,9 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   } else {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        ConstructClientAckAndMultipleDataFramesPacket(
+        ConstructClientAckAndDataPacket(
             packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(0),
-            1, 1, 1, false, {header, std::string(get_request)}));
+            1, 1, 1, false, {header + std::string(get_request)}));
   }
 
   const char get_response[] =
@@ -8486,10 +8480,10 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   } else {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        ConstructClientAckAndMultipleDataFramesPacket(
+        ConstructClientAckAndDataPacket(
             packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(1),
             4, 4, 1, false,
-            {header4, std::string(get_frame.data(), get_frame.size())}));
+            {header4 + std::string(get_frame.data(), get_frame.size())}));
   }
 
   spdy::SpdySerializedFrame resp_frame =
@@ -8716,9 +8710,9 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
   } else {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        ConstructClientAckAndMultipleDataFramesPacket(
+        ConstructClientAckAndDataPacket(
             packet_num++, false, GetNthClientInitiatedBidirectionalStreamId(1),
-            2, 2, 1, false, {header, std::string(get_request)}));
+            2, 2, 1, false, {header + std::string(get_request)}));
   }
   const char get_response[] =
       "HTTP/1.1 200 OK\r\n"
@@ -9687,10 +9681,10 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
                            1, false, quic::QuicStringPiece(kGetRequest)));
     } else {
       mock_quic_data[index]->AddWrite(
-          SYNCHRONOUS, client_maker.MakeAckAndMultipleDataFramesPacket(
+          SYNCHRONOUS, client_maker.MakeAckAndDataPacket(
                            packet_num++, false,
                            GetNthClientInitiatedBidirectionalStreamId(0), 1, 1,
-                           1, false, {header, std::string(kGetRequest)}));
+                           1, false, {header + std::string(kGetRequest)}));
     }
 
     std::string header2 = ConstructDataHeader(strlen(kGetResponse));
