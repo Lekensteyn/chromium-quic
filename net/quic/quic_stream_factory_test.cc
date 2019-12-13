@@ -9847,25 +9847,21 @@ TEST_P(QuicStreamFactoryTest, DefaultIdleMigrationPeriod) {
   quic_data1.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
-  client_maker_.Reset();
   MockQuicData quic_data2(version_);                // retry count: 2
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
   quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  client_maker_.Reset();
   MockQuicData quic_data3(version_);                // retry count: 3
   quic_data3.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
   quic_data3.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data3.AddSocketDataToFactory(socket_factory_.get());
 
-  client_maker_.Reset();
   MockQuicData quic_data4(version_);                // retry count: 4
   quic_data4.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
   quic_data4.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data4.AddSocketDataToFactory(socket_factory_.get());
 
-  client_maker_.Reset();
   MockQuicData quic_data5(version_);                // retry count: 5
   quic_data5.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
   quic_data5.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
@@ -9971,25 +9967,21 @@ TEST_P(QuicStreamFactoryTest, CustomIdleMigrationPeriod) {
   quic_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
-  client_maker_.Reset();
   MockQuicData quic_data1(version_);                // retry count: 1
   quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
   quic_data1.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
 
-  client_maker_.Reset();
   MockQuicData quic_data2(version_);                // retry count: 2
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
   quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
-  client_maker_.Reset();
   MockQuicData quic_data3(version_);                // retry count: 3
   quic_data3.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
   quic_data3.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data3.AddSocketDataToFactory(socket_factory_.get());
 
-  client_maker_.Reset();
   MockQuicData quic_data4(version_);                // retry count: 4
   quic_data4.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
   quic_data4.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
@@ -12935,7 +12927,6 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSMatches) {
   quic_data.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
-  client_maker_.Reset();
   MockQuicData quic_data2(version_);
   quic_data2.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -13053,7 +13044,6 @@ TEST_P(QuicStreamFactoryTest, ResultAfterDNSRaceStaleErrorDNSNoMatchError) {
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Add failure for resolved dns connection.
-  client_maker_.Reset();
   MockQuicData quic_data2(version_);
   quic_data2.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
   quic_data2.AddSocketDataToFactory(socket_factory_.get());

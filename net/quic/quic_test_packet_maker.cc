@@ -1605,8 +1605,7 @@ quic::QuicConnectionIdIncluded QuicTestPacketMaker::HasSourceConnectionId()
 }
 
 void QuicTestPacketMaker::Reset() {
-  for (const auto& kv : stream_offsets_)
-    stream_offsets_[kv.first] = 0;
+  stream_offsets_.clear();
 }
 
 quic::QuicStreamId QuicTestPacketMaker::GetFirstBidirectionalStreamId() const {
