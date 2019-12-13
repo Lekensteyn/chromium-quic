@@ -109,6 +109,8 @@ class TestingQuicChromiumClientSession : public QuicChromiumClientSession {
   using QuicChromiumClientSession::QuicChromiumClientSession;
 
   MOCK_METHOD0(OnPathDegrading, void());
+
+  void ReallyOnPathDegrading() { QuicChromiumClientSession::OnPathDegrading(); }
 };
 
 class QuicChromiumClientSessionTest
@@ -146,7 +148,8 @@ class QuicChromiumClientSessionTest
                       kServerHostname,
                       quic::Perspective::IS_SERVER,
                       false),
-        migrate_session_early_v2_(false) {
+        migrate_session_early_v2_(false),
+        go_away_on_path_degrading_(false) {
     quic::QuicEnableVersion(version_);
     // Advance the time, because timers do not like uninitialized times.
     clock_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
@@ -192,7 +195,7 @@ class QuicChromiumClientSessionTest
         kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
-        /*go_away_on_path_degrading*/ false,
+        go_away_on_path_degrading_,
         client_headers_include_h2_stream_dependency_,
         /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
@@ -288,6 +291,7 @@ class QuicChromiumClientSessionTest
   ProofVerifyDetailsChromium verify_details_;
   bool migrate_session_early_v2_;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
+  bool go_away_on_path_degrading_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -1960,6 +1964,25 @@ TEST_P(QuicChromiumClientSessionTest, DetectPathDegradingDuringHandshake) {
   EXPECT_TRUE(session_->connection()->IsPathDegrading());
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
   EXPECT_TRUE(quic_data.AllWriteDataConsumed());
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       GoAwayOnPathDegradingOnlyWhenHandshakeConfirmed) {
+  go_away_on_path_degrading_ = true;
+  MockQuicData quic_data(version_);
+  if (VersionUsesHttp3(version_.transport_version))
+    quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, OK);  // EOF
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  session_->ReallyOnPathDegrading();
+  EXPECT_FALSE(
+      QuicChromiumClientSessionPeer::GetSessionGoingAway(session_.get()));
+  CompleteCryptoHandshake();
+  session_->ReallyOnPathDegrading();
+  EXPECT_TRUE(
+      QuicChromiumClientSessionPeer::GetSessionGoingAway(session_.get()));
 }
 
 TEST_P(QuicChromiumClientSessionTest, RetransmittableOnWireTimeout) {
