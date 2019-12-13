@@ -146,7 +146,7 @@ class QuicChromiumClientSessionTest
                       quic::Perspective::IS_SERVER,
                       false),
         migrate_session_early_v2_(false) {
-    SetQuicReloadableFlag(quic_supports_tls_handshake, true);
+    quic::QuicEnableVersion(version_);
     // Advance the time, because timers do not like uninitialized times.
     clock_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
   }
