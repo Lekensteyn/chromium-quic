@@ -336,65 +336,6 @@ QuicTestPacketMaker::MakeMaxStreamsPacket(uint64_t num,
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeRstAndRequestHeadersPacket(
-    uint64_t num,
-    bool include_version,
-    quic::QuicStreamId rst_stream_id,
-    quic::QuicRstStreamErrorCode rst_error_code,
-    quic::QuicStreamId stream_id,
-    bool fin,
-    spdy::SpdyPriority priority,
-    spdy::SpdyHeaderBlock headers,
-    quic::QuicStreamId parent_stream_id,
-    size_t* spdy_headers_frame_length) {
-  InitializeHeader(num, include_version);
-  quic::QuicRstStreamFrame rst_frame(1, rst_stream_id, rst_error_code, 0);
-  quic::QuicFrames frames;
-  frames.push_back(quic::QuicFrame(&rst_frame));
-  DVLOG(1) << "Adding frame: " << frames.back();
-
-  // The STOP_SENDING frame must be outside of the if (version==99) so that it
-  // stays in scope until the packet is built.
-  quic::QuicStopSendingFrame stop(1, rst_stream_id, rst_error_code);
-  if (version_.transport_version == quic::QUIC_VERSION_99) {
-    frames.push_back(quic::QuicFrame(&stop));
-    DVLOG(1) << "Adding frame: " << frames.back();
-  }
-
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    // Send SETTINGS frame(s) if they have not already been sent.
-    MaybeAddHttp3SettingsFrames(&frames);
-
-    if (FLAGS_quic_allow_http3_priority) {
-      std::string priority_data =
-          GenerateHttp3PriorityData(priority, stream_id);
-      frames.push_back(GenerateNextStreamFrame(2, false, priority_data));
-    }
-
-    // STREAM frames for HEADERS.
-    std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
-                                          spdy_headers_frame_length);
-
-    frames.push_back(GenerateNextStreamFrame(stream_id, fin, data));
-
-    InitializeHeader(num, include_version);
-    return MakeMultipleFramesPacket(header_, frames, nullptr);
-  }
-
-  spdy::SpdySerializedFrame spdy_frame = MakeSpdyHeadersFrame(
-      stream_id, fin, priority, std::move(headers), parent_stream_id);
-  if (spdy_headers_frame_length) {
-    *spdy_headers_frame_length = spdy_frame.size();
-  }
-  frames.push_back(GenerateNextStreamFrame(
-      GetHeadersStreamId(), false,
-      quic::QuicStringPiece(spdy_frame.data(), spdy_frame.size())));
-
-  InitializeHeader(num, include_version);
-  return MakeMultipleFramesPacket(header_, frames, nullptr);
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeRstAndDataPacket(
     uint64_t num,
     bool include_version,

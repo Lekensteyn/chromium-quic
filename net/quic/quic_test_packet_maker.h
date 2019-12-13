@@ -94,18 +94,6 @@ class QuicTestPacketMaker {
       quic::QuicRstStreamErrorCode error_code,
       bool include_stop_sending_if_v99);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeRstAndRequestHeadersPacket(
-      uint64_t num,
-      bool include_version,
-      quic::QuicStreamId rst_stream_id,
-      quic::QuicRstStreamErrorCode rst_error_code,
-      quic::QuicStreamId stream_id,
-      bool fin,
-      spdy::SpdyPriority priority,
-      spdy::SpdyHeaderBlock headers,
-      quic::QuicStreamId parent_stream_id,
-      size_t* spdy_headers_frame_length);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeRstAndDataPacket(
       uint64_t num,
       bool include_version,
