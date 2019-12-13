@@ -395,6 +395,68 @@ QuicTestPacketMaker::MakeRstAndRequestHeadersPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeRstAndDataPacket(
+    uint64_t num,
+    bool include_version,
+    quic::QuicStreamId rst_stream_id,
+    quic::QuicRstStreamErrorCode rst_error_code,
+    quic::QuicStreamId data_stream_id,
+    quic::QuicStringPiece data) {
+  InitializeHeader(num, include_version);
+  quic::QuicFrames frames;
+
+  quic::QuicRstStreamFrame rst_frame(1, rst_stream_id, rst_error_code,
+                                     stream_offsets_[rst_stream_id]);
+  frames.push_back(quic::QuicFrame(&rst_frame));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  // The STOP_SENDING frame must be outside of the if (version==99) so that it
+  // stays in scope until the packet is built.
+  quic::QuicStopSendingFrame stop(1, rst_stream_id, rst_error_code);
+  if (version_.transport_version == quic::QUIC_VERSION_99) {
+    frames.push_back(quic::QuicFrame(&stop));
+    DVLOG(1) << "Adding frame: " << frames.back();
+  }
+
+  frames.push_back(
+      GenerateNextStreamFrame(data_stream_id, /* fin = */ false, data));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  return MakeMultipleFramesPacket(header_, frames, nullptr);
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeDataAndRstPacket(
+    uint64_t num,
+    bool include_version,
+    quic::QuicStreamId data_stream_id,
+    quic::QuicStringPiece data,
+    quic::QuicStreamId rst_stream_id,
+    quic::QuicRstStreamErrorCode rst_error_code) {
+  InitializeHeader(num, include_version);
+  quic::QuicFrames frames;
+
+  frames.push_back(
+      GenerateNextStreamFrame(data_stream_id, /* fin = */ false, data));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  quic::QuicRstStreamFrame rst_frame(1, rst_stream_id, rst_error_code,
+                                     stream_offsets_[rst_stream_id]);
+  frames.push_back(quic::QuicFrame(&rst_frame));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  // The STOP_SENDING frame must be outside of the if (version==99) so that it
+  // stays in scope until the packet is built.
+  quic::QuicStopSendingFrame stop(1, rst_stream_id, rst_error_code);
+  if (version_.transport_version == quic::QUIC_VERSION_99) {
+    frames.push_back(quic::QuicFrame(&stop));
+    DVLOG(1) << "Adding frame: " << frames.back();
+  }
+
+  return MakeMultipleFramesPacket(header_, frames, nullptr);
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeAckAndRstPacket(
     uint64_t num,
     bool include_version,
@@ -531,6 +593,105 @@ QuicTestPacketMaker::MakeRstAndConnectionClosePacket(
     frames.push_back(quic::QuicFrame(&stop));
     DVLOG(1) << "Adding frame: " << frames.back();
   }
+
+  quic::QuicConnectionCloseFrame close(version_.transport_version, quic_error,
+                                       quic_error_details,
+                                       /*transport_close_frame_type=*/0);
+
+  frames.push_back(quic::QuicFrame(&close));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  return MakeMultipleFramesPacket(header_, frames, nullptr);
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeDataRstAndConnectionClosePacket(
+    uint64_t num,
+    bool include_version,
+    quic::QuicStreamId data_stream_id,
+    quic::QuicStringPiece data,
+    quic::QuicStreamId rst_stream_id,
+    quic::QuicRstStreamErrorCode error_code,
+    quic::QuicErrorCode quic_error,
+    const std::string& quic_error_details) {
+  InitializeHeader(num, include_version);
+  quic::QuicFrames frames;
+
+  frames.push_back(
+      GenerateNextStreamFrame(data_stream_id, /* fin = */ false, data));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  quic::QuicRstStreamFrame rst(1, rst_stream_id, error_code,
+                               stream_offsets_[rst_stream_id]);
+  frames.push_back(quic::QuicFrame(&rst));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  // The STOP_SENDING frame must be outside of the if (version==99) so that it
+  // stays in scope until the packet is built.
+  quic::QuicStopSendingFrame stop(
+      1, rst_stream_id,
+      static_cast<quic::QuicApplicationErrorCode>(error_code));
+  if (version_.transport_version == quic::QUIC_VERSION_99) {
+    frames.push_back(quic::QuicFrame(&stop));
+    DVLOG(1) << "Adding frame: " << frames.back();
+  }
+
+  quic::QuicConnectionCloseFrame close(version_.transport_version, quic_error,
+                                       quic_error_details,
+                                       /*transport_close_frame_type=*/0);
+
+  frames.push_back(quic::QuicFrame(&close));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  return MakeMultipleFramesPacket(header_, frames, nullptr);
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeDataRstAckAndConnectionClosePacket(
+    uint64_t num,
+    bool include_version,
+    quic::QuicStreamId data_stream_id,
+    quic::QuicStringPiece data,
+    quic::QuicStreamId rst_stream_id,
+    quic::QuicRstStreamErrorCode error_code,
+    uint64_t largest_received,
+    uint64_t smallest_received,
+    uint64_t least_unacked,
+    quic::QuicErrorCode quic_error,
+    const std::string& quic_error_details) {
+  InitializeHeader(num, include_version);
+  quic::QuicFrames frames;
+
+  frames.push_back(
+      GenerateNextStreamFrame(data_stream_id, /* fin = */ false, data));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  quic::QuicRstStreamFrame rst(1, rst_stream_id, error_code, 0);
+  frames.push_back(quic::QuicFrame(&rst));
+  DVLOG(1) << "Adding frame: " << frames.back();
+
+  // The STOP_SENDING frame must be outside of the if (version==99) so that it
+  // stays in scope until the packet is built.
+  quic::QuicStopSendingFrame stop(
+      1, rst_stream_id,
+      static_cast<quic::QuicApplicationErrorCode>(error_code));
+  if (version_.transport_version == quic::QUIC_VERSION_99) {
+    frames.push_back(quic::QuicFrame(&stop));
+    DVLOG(1) << "Adding frame: " << frames.back();
+  }
+
+  quic::QuicAckFrame ack(MakeAckFrame(largest_received));
+  ack.ack_delay_time = quic::QuicTime::Delta::Zero();
+  for (uint64_t i = smallest_received; i <= largest_received; ++i) {
+    ack.received_packet_times.push_back(
+        std::make_pair(quic::QuicPacketNumber(i), clock_->Now()));
+  }
+  if (largest_received > 0) {
+    ack.packets.AddRange(quic::QuicPacketNumber(1),
+                         quic::QuicPacketNumber(largest_received + 1));
+  }
+  frames.push_back(quic::QuicFrame(&ack));
+  DVLOG(1) << "Adding frame: " << frames.back();
 
   quic::QuicConnectionCloseFrame close(version_.transport_version, quic_error,
                                        quic_error_details,
