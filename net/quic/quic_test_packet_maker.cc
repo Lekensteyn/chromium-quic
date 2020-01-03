@@ -726,43 +726,12 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakeAckPacket(
     ack.packets.AddRange(quic::QuicPacketNumber(first_received),
                          quic::QuicPacketNumber(largest_received + 1));
   }
-  quic::QuicFramer framer(quic::test::SupportedVersions(version_),
-                          clock_->Now(), perspective_,
-                          quic::kQuicDefaultConnectionIdLength);
-  if (encryption_level_ == quic::ENCRYPTION_INITIAL) {
-    framer.SetInitialObfuscators(perspective_ == quic::Perspective::IS_CLIENT
-                                     ? header_.destination_connection_id
-                                     : header_.source_connection_id);
-  } else {
-    framer.SetEncrypter(encryption_level_,
-                        std::make_unique<quic::NullEncrypter>(perspective_));
-  }
+
   quic::QuicFrames frames;
   quic::QuicFrame ack_frame(&ack);
   frames.push_back(ack_frame);
   DVLOG(1) << "Adding frame: " << frames.back();
-
-  size_t max_plaintext_size =
-      framer.GetMaxPlaintextSize(quic::kDefaultMaxPacketSize);
-  size_t ack_frame_length = framer.GetSerializedFrameLength(
-      ack_frame, max_plaintext_size, /*first_frame*/ true, /*last_frame*/ false,
-      header_.packet_number_length);
-  const size_t min_plaintext_size = 7;
-  if (version_.HasHeaderProtection() && ack_frame_length < min_plaintext_size) {
-    size_t padding_length = min_plaintext_size - ack_frame_length;
-    frames.push_back(quic::QuicFrame(quic::QuicPaddingFrame(padding_length)));
-  }
-
-  std::unique_ptr<quic::QuicPacket> packet(
-      quic::test::BuildUnsizedDataPacket(&framer, header_, frames));
-  char buffer[quic::kMaxOutgoingPacketSize];
-  size_t encrypted_size =
-      framer.EncryptPayload(encryption_level_, header_.packet_number, *packet,
-                            buffer, quic::kMaxOutgoingPacketSize);
-  EXPECT_NE(0u, encrypted_size);
-  quic::QuicReceivedPacket encrypted(buffer, encrypted_size, clock_->Now(),
-                                     false);
-  return encrypted.Clone();
+  return MakeMultipleFramesPacket(header_, frames, nullptr);
 }
 
 std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakeDataPacket(
