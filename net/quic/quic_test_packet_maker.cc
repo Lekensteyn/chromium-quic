@@ -107,16 +107,6 @@ quic::QuicFrames CloneFrames(const quic::QuicFrames& frames) {
 
 }  // namespace
 
-void QuicTestPacketMaker::DecoderStreamErrorDelegate::OnDecoderStreamError(
-    quiche::QuicheStringPiece error_message) {
-  LOG(FATAL) << error_message;
-}
-
-void QuicTestPacketMaker::EncoderStreamSenderDelegate::WriteStreamData(
-    quiche::QuicheStringPiece data) {
-  LOG(FATAL) << "data.length: " << data.length();
-}
-
 QuicTestPacketMaker::QuicTestPacketMaker(
     quic::ParsedQuicVersion version,
     quic::QuicConnectionId connection_id,
@@ -1105,7 +1095,7 @@ QuicTestPacketMaker::MakeResponseHeadersPacket(
 spdy::SpdyHeaderBlock QuicTestPacketMaker::GetRequestHeaders(
     const std::string& method,
     const std::string& scheme,
-    const std::string& path) {
+    const std::string& path) const {
   spdy::SpdyHeaderBlock headers;
   headers[":method"] = method;
   headers[":authority"] = host_;
@@ -1115,7 +1105,7 @@ spdy::SpdyHeaderBlock QuicTestPacketMaker::GetRequestHeaders(
 }
 
 spdy::SpdyHeaderBlock QuicTestPacketMaker::ConnectRequestHeaders(
-    const std::string& host_port) {
+    const std::string& host_port) const {
   spdy::SpdyHeaderBlock headers;
   headers[":method"] = "CONNECT";
   headers[":authority"] = host_port;
@@ -1123,7 +1113,7 @@ spdy::SpdyHeaderBlock QuicTestPacketMaker::ConnectRequestHeaders(
 }
 
 spdy::SpdyHeaderBlock QuicTestPacketMaker::GetResponseHeaders(
-    const std::string& status) {
+    const std::string& status) const {
   spdy::SpdyHeaderBlock headers;
   headers[":status"] = status;
   headers["content-type"] = "text/plain";
@@ -1132,7 +1122,7 @@ spdy::SpdyHeaderBlock QuicTestPacketMaker::GetResponseHeaders(
 
 spdy::SpdyHeaderBlock QuicTestPacketMaker::GetResponseHeaders(
     const std::string& status,
-    const std::string& alt_svc) {
+    const std::string& alt_svc) const {
   spdy::SpdyHeaderBlock headers;
   headers[":status"] = status;
   headers["alt-svc"] = alt_svc;
