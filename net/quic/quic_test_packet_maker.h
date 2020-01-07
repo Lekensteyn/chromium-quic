@@ -207,13 +207,6 @@ class QuicTestPacketMaker {
       bool should_include_version,
       bool fin,
       quiche::QuicheStringPiece data);
-  std::unique_ptr<quic::QuicReceivedPacket> MakeForceHolDataPacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      bool should_include_version,
-      bool fin,
-      quic::QuicStreamOffset* offset,
-      quiche::QuicheStringPiece data);
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndDataPacket(
       uint64_t packet_number,
       bool include_version,
@@ -368,11 +361,6 @@ class QuicTestPacketMaker {
   quic::QuicFrame GenerateNextStreamFrame(quic::QuicStreamId stream_id,
                                           bool fin,
                                           quiche::QuicheStringPiece data);
-
-  std::vector<quic::QuicFrame> GenerateNextStreamFrames(
-      quic::QuicStreamId stream_id,
-      bool fin,
-      const std::vector<std::string>& data);
 
   quic::QuicPacketNumberLength GetPacketNumberLength() const;
 

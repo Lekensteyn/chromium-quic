@@ -155,18 +155,6 @@ QuicTestPacketMaker::MakeConnectivityProbingPacket(uint64_t num,
                                                    bool include_version) {
   InitializeHeader(num, include_version);
 
-  quic::QuicFramer framer(quic::test::SupportedVersions(version_),
-                          clock_->Now(), perspective_,
-                          quic::kQuicDefaultConnectionIdLength);
-  if (encryption_level_ == quic::ENCRYPTION_INITIAL) {
-    framer.SetInitialObfuscators(perspective_ == quic::Perspective::IS_CLIENT
-                                     ? header_.destination_connection_id
-                                     : header_.source_connection_id);
-  } else {
-    framer.SetEncrypter(encryption_level_,
-                        std::make_unique<quic::NullEncrypter>(perspective_));
-  }
-
   if (version_.transport_version != quic::QUIC_VERSION_99) {
     quic::QuicFrames frames{{quic::QuicFrame{quic::QuicPingFrame{}},
                              quic::QuicFrame{quic::QuicPaddingFrame{}}}};
@@ -1008,25 +996,6 @@ QuicTestPacketMaker::MakePushPromisePacket(
                                                            spdy_frame.size())));
 }
 
-std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeForceHolDataPacket(uint64_t packet_number,
-                                            quic::QuicStreamId stream_id,
-                                            bool should_include_version,
-                                            bool fin,
-                                            quic::QuicStreamOffset* offset,
-                                            quiche::QuicheStringPiece data) {
-  spdy::SpdyDataIR spdy_data(stream_id, data);
-  spdy_data.set_fin(fin);
-  spdy::SpdySerializedFrame spdy_frame(
-      spdy_request_framer_.SerializeFrame(spdy_data));
-  InitializeHeader(packet_number, should_include_version);
-  quic::QuicStreamFrame quic_frame(
-      GetHeadersStreamId(), false, *offset,
-      quiche::QuicheStringPiece(spdy_frame.data(), spdy_frame.size()));
-  *offset += spdy_frame.size();
-  return MakePacket(header_, quic::QuicFrame(quic_frame));
-}
-
 // If |offset| is provided, will use the value when creating the packet.
 // Will also update the value after packet creation.
 std::unique_ptr<quic::QuicReceivedPacket>
@@ -1420,18 +1389,6 @@ std::string QuicTestPacketMaker::QpackEncodeHeaders(
     *encoded_data_length = data.length();
   }
   return data;
-}
-
-std::vector<quic::QuicFrame> QuicTestPacketMaker::GenerateNextStreamFrames(
-    quic::QuicStreamId stream_id,
-    bool fin,
-    const std::vector<std::string>& data) {
-  std::vector<quic::QuicFrame> frames;
-  for (size_t i = 0; i < data.size(); ++i) {
-    const bool frame_fin = i == data.size() - 1 && fin;
-    frames.push_back(GenerateNextStreamFrame(stream_id, frame_fin, data[i]));
-  }
-  return frames;
 }
 
 quic::QuicPacketNumberLength QuicTestPacketMaker::GetPacketNumberLength()
