@@ -302,10 +302,8 @@ void MockCryptoClientStream::SetConfigNegotiated() {
       QuicTime::Delta::FromSeconds(2 * kMaximumIdleTimeoutSecs),
       QuicTime::Delta::FromSeconds(kMaximumIdleTimeoutSecs));
   config.SetBytesForConnectionIdToSend(PACKET_8BYTE_CONNECTION_ID);
-  config.SetMaxIncomingBidirectionalStreamsToSend(
-      kDefaultMaxStreamsPerConnection / 2);
-  config.SetMaxIncomingUnidirectionalStreamsToSend(
-      kDefaultMaxStreamsPerConnection / 2);
+  config.SetMaxBidirectionalStreamsToSend(kDefaultMaxStreamsPerConnection / 2);
+  config.SetMaxUnidirectionalStreamsToSend(kDefaultMaxStreamsPerConnection / 2);
   config.SetInitialMaxStreamDataBytesIncomingBidirectionalToSend(
       quic::kMinimumFlowControlSendWindow);
   config.SetInitialMaxStreamDataBytesOutgoingBidirectionalToSend(

@@ -170,7 +170,7 @@ class QuicChromiumClientStreamTest
     quic::test::QuicConfigPeer::
         SetReceivedInitialMaxStreamDataBytesOutgoingBidirectional(
             session_.config(), quic::kMinimumFlowControlSendWindow);
-    quic::test::QuicConfigPeer::SetReceivedMaxIncomingUnidirectionalStreams(
+    quic::test::QuicConfigPeer::SetReceivedMaxUnidirectionalStreams(
         session_.config(), 10);
     session_.OnConfigNegotiated();
     stream_ = new QuicChromiumClientStream(

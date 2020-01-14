@@ -316,6 +316,12 @@ void QuicTransportClient::OnIncomingUnidirectionalStreamAvailable() {
   visitor_->OnIncomingUnidirectionalStreamAvailable();
 }
 
+void QuicTransportClient::OnIncomingDatagramAvailable() {}
+
+void QuicTransportClient::OnCanCreateNewOutgoingBidirectionalStream() {}
+
+void QuicTransportClient::OnCanCreateNewOutgoingUnidirectionalStream() {}
+
 void QuicTransportClient::OnReadError(int result,
                                       const DatagramClientSocket* socket) {
   error_.net_error = result;

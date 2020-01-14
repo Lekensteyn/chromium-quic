@@ -114,6 +114,9 @@ class NET_EXPORT QuicTransportClient
   void OnSessionReady() override;
   void OnIncomingBidirectionalStreamAvailable() override;
   void OnIncomingUnidirectionalStreamAvailable() override;
+  void OnIncomingDatagramAvailable() override;
+  void OnCanCreateNewOutgoingBidirectionalStream() override;
+  void OnCanCreateNewOutgoingUnidirectionalStream() override;
 
   // QuicChromiumPacketReader::Visitor methods.
   void OnReadError(int result, const DatagramClientSocket* socket) override;
