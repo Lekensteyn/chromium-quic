@@ -109,11 +109,6 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
   for (const auto& version : all_supported_versions) {
-    // Test fails for soon to be deprecated Q099, so skip it.
-    // TODO(bnc): Re-enable T099 when PRIORITY_UPDATE is added.
-    if (version.transport_version == quic::QUIC_VERSION_99) {
-      continue;
-    }
     params.push_back(TestParams{version, false});
     params.push_back(TestParams{version, true});
   }

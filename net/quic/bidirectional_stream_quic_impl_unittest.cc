@@ -99,11 +99,6 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
   for (const auto& version : all_supported_versions) {
-    // Test fails for soon to be deprecated Q099, so skip it.
-    if (version.transport_version == quic::QUIC_VERSION_99 &&
-        version.handshake_protocol == quic::PROTOCOL_QUIC_CRYPTO) {
-      continue;
-    }
     params.push_back(TestParams{version, false});
     params.push_back(TestParams{version, true});
   }
