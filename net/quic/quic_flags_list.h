@@ -97,7 +97,7 @@ QUIC_FLAG(bool, FLAGS_quic_restart_flag_quic_offload_pacing_to_usps2, false)
 // adaptive packet threshold.
 QUIC_FLAG(bool,
           FLAGS_quic_restart_flag_quic_default_on_ietf_loss_detection,
-          false)
+          true)
 
 // Max time that QUIC can pace packets into the future in ms.
 QUIC_FLAG(int32_t, FLAGS_quic_max_pace_time_into_future_ms, 10)
@@ -258,9 +258,7 @@ QUIC_FLAG(bool,
           true)
 
 // If true, add a up call when N packet numbers get skipped.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_on_packet_numbers_skipped,
-          false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_on_packet_numbers_skipped, true)
 
 // The default minimum duration for BBRv2-native probes, in milliseconds.
 QUIC_FLAG(int32_t, FLAGS_quic_bbr2_default_probe_bw_base_duration_ms, 2000)
@@ -313,7 +311,7 @@ QUIC_FLAG(bool,
 
 // If true, QUIC crypto handshaker uses handshaker delegate to notify session
 // about handshake events.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_handshaker_delegate2, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_handshaker_delegate2, true)
 
 // If true, disable QUIC version Q043.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_q043, false)
@@ -344,7 +342,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_testonly_default_false, false)
 
 // If true, QuicSentPacketManager will cap ack_delay to
 // peer_advertized_ack_delay before using it.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_sanitize_ack_delay, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_sanitize_ack_delay, true)
 
 // If true, allow connection IDs of length [21,255] in version
 // negotiation packets.
@@ -353,7 +351,7 @@ QUIC_FLAG(bool,
           true)
 
 // If true, frames will be hold in an optimized wrapper data structure.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_interval_deque, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_interval_deque, true)
 
 // If true, QUIC BBRv2 will cut inflight_hi gradually upon loss from PROBE_UP.
 QUIC_FLAG(bool,
@@ -390,8 +388,6 @@ QUIC_FLAG(
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_log_coalesce_stream_frame_frequency,
           true)
-
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_ip_bandwidth_module, false)
 
 // In BBR, slow pacing rate if it is likely causing overshoot.
 QUIC_FLAG(
