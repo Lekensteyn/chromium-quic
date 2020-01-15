@@ -91,6 +91,9 @@ class NET_EXPORT QuicTransportClient
 
     virtual void OnIncomingBidirectionalStreamAvailable() = 0;
     virtual void OnIncomingUnidirectionalStreamAvailable() = 0;
+    virtual void OnIncomingDatagramAvailable() = 0;
+    virtual void OnCanCreateNewOutgoingBidirectionalStream() = 0;
+    virtual void OnCanCreateNewOutgoingUnidirectionalStream() = 0;
   };
 
   // |visitor| and |context| must outlive this object.

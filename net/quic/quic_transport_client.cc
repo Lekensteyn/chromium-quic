@@ -316,11 +316,17 @@ void QuicTransportClient::OnIncomingUnidirectionalStreamAvailable() {
   visitor_->OnIncomingUnidirectionalStreamAvailable();
 }
 
-void QuicTransportClient::OnIncomingDatagramAvailable() {}
+void QuicTransportClient::OnIncomingDatagramAvailable() {
+  visitor_->OnIncomingDatagramAvailable();
+}
 
-void QuicTransportClient::OnCanCreateNewOutgoingBidirectionalStream() {}
+void QuicTransportClient::OnCanCreateNewOutgoingBidirectionalStream() {
+  visitor_->OnCanCreateNewOutgoingBidirectionalStream();
+}
 
-void QuicTransportClient::OnCanCreateNewOutgoingUnidirectionalStream() {}
+void QuicTransportClient::OnCanCreateNewOutgoingUnidirectionalStream() {
+  visitor_->OnCanCreateNewOutgoingUnidirectionalStream();
+}
 
 void QuicTransportClient::OnReadError(int result,
                                       const DatagramClientSocket* socket) {
