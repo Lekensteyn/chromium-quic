@@ -394,3 +394,25 @@ QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_bbr_mitigate_overly_large_bandwidth_sample,
     false)
+
+// If true, support QUIC BBRv2-style loss based startup exit in BBRv1.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_bbr_loss_based_startup_exit,
+          false)
+
+// If true, correctly stop processing bad PROX packets.
+QUIC_FLAG(bool,
+          FLAGS_quic_restart_flag_quic_fix_handling_of_bad_prox_packet,
+          false)
+
+// The default initial value of the max ack height filter's window length.
+QUIC_FLAG(int32_t, FLAGS_quic_bbr2_default_initial_ack_height_filter_window, 10)
+
+// If true, QUIC BBRv2 will always count the number of loss events in a round,
+// instead of just counting it in STARTUP.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_bbr2_always_count_loss_events,
+          false)
+
+// The default minimum number of loss marking events to exit PROBE_UP phase.
+QUIC_FLAG(double, FLAGS_quic_bbr2_default_probe_bw_full_loss_count, 2)

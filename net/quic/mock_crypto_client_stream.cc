@@ -222,7 +222,7 @@ bool MockCryptoClientStream::encryption_established() const {
   return encryption_established_;
 }
 
-bool MockCryptoClientStream::handshake_confirmed() const {
+bool MockCryptoClientStream::one_rtt_keys_available() const {
   return handshake_confirmed_;
 }
 
