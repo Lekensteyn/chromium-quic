@@ -411,3 +411,10 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_one_immediate_ack, false)
 // If true, instead of getting handshake state from sent packet manager, ask
 // session for current handshake state.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_get_handshake_state, false)
+
+// If true, in QuicPacketReader, replace the use of QuicSocketUtils by
+// equivalent QuicUdpSocketApi or QuicLinuxSocketUtils functions."
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_restart_flag_quic_remove_quic_socket_utils_from_packet_reader,
+    false)
