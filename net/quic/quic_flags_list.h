@@ -418,3 +418,10 @@ QUIC_FLAG(
     bool,
     FLAGS_quic_restart_flag_quic_remove_quic_socket_utils_from_packet_reader,
     false)
+
+// If true, QuicSentPacketManager::SetSendAlgorithm(CongestionControlType) will
+// become a no-op if the current and the requested cc_type are the same.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_set_send_algorithm_noop_if_cc_type_unchanged,
+    false)
