@@ -322,7 +322,7 @@ class QuicNetworkTransactionTest
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         ssl_data_(ASYNC, OK) {
-    FLAGS_quic_disable_http3_settings_grease_randomness = true;
+    FLAGS_quic_enable_http3_grease_randomness = false;
     request_.method = "GET";
     std::string url("https://");
     url.append(kDefaultServerHostName);
@@ -7440,7 +7440,7 @@ class QuicNetworkTransactionWithDestinationTest
             ConfiguredProxyResolutionService::CreateDirect()),
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         ssl_data_(ASYNC, OK) {
-    FLAGS_quic_disable_http3_settings_grease_randomness = true;
+    FLAGS_quic_enable_http3_grease_randomness = false;
   }
 
   void SetUp() override {
