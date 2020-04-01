@@ -593,6 +593,14 @@ void QuicConnectionLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
   }
 }
 
+void QuicConnectionLogger::OnStreamFrameCoalesced(
+    const quic::QuicStreamFrame& frame) {
+  if (!net_log_.IsCapturing())
+    return;
+  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_STREAM_FRAME_COALESCED,
+                    [&] { return NetLogQuicStreamFrameParams(frame); });
+}
+
 void QuicConnectionLogger::OnPacketSent(
     const quic::SerializedPacket& serialized_packet,
     quic::TransmissionType transmission_type,
