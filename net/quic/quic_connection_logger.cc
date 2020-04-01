@@ -962,6 +962,24 @@ void QuicConnectionLogger::OnMessageFrame(const quic::QuicMessageFrame& frame) {
       frame.message_length);
 }
 
+void QuicConnectionLogger::OnHandshakeDoneFrame(
+    const quic::QuicHandshakeDoneFrame& frame) {
+  if (!net_log_.IsCapturing())
+    return;
+  net_log_.AddEvent(
+      NetLogEventType::QUIC_SESSION_HANDSHAKE_DONE_FRAME_RECEIVED);
+}
+
+void QuicConnectionLogger::OnCoalescedPacketSent(
+    const quic::QuicCoalescedPacket& coalesced_packet,
+    size_t length) {
+  if (!net_log_.IsCapturing())
+    return;
+  net_log_.AddEventWithStringParams(
+      NetLogEventType::QUIC_SESSION_COALESCED_PACKET_SENT, "info",
+      coalesced_packet.ToString(length));
+}
+
 void QuicConnectionLogger::OnPublicResetPacket(
     const quic::QuicPublicResetPacket& packet) {
   UpdatePublicResetAddressMismatchHistogram(

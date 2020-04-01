@@ -95,6 +95,9 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
   void OnRetireConnectionIdFrame(
       const quic::QuicRetireConnectionIdFrame& frame) override;
   void OnMessageFrame(const quic::QuicMessageFrame& frame) override;
+  void OnHandshakeDoneFrame(const quic::QuicHandshakeDoneFrame& frame) override;
+  void OnCoalescedPacketSent(const quic::QuicCoalescedPacket& coalesced_packet,
+                             size_t length) override;
   void OnPublicResetPacket(const quic::QuicPublicResetPacket& packet) override;
   void OnVersionNegotiationPacket(
       const quic::QuicVersionNegotiationPacket& packet) override;
