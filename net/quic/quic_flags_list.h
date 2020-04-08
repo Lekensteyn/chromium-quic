@@ -380,7 +380,7 @@ QUIC_FLAG(
 // keys are available).
 QUIC_FLAG(bool,
           FLAGS_quic_restart_flag_quic_send_settings_on_write_key_available,
-          false)
+          true)
 
 // If true, use blackhole detector in QuicConnection to detect path degrading
 // and network blackhole.
