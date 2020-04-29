@@ -308,9 +308,7 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_blackhole_detector, true)
 
 // If true, use idle network detector to detect handshake timeout and idle
 // network timeout.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_use_idle_network_detector,
-          false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_idle_network_detector, true)
 
 // If true, when QUIC switches from BbrSender to Bbr2Sender, Bbr2Sender will
 // copy the bandwidth sampler states from BbrSender.
