@@ -209,7 +209,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
  protected:
   static const bool kFin = true;
   static const bool kIncludeVersion = true;
-  static const bool kIncludeCongestionFeedback = true;
 
   // Holds a packet to be written to the wire, and the IO mode that should
   // be used by the mock socket when performing the write.
@@ -540,7 +539,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       uint64_t packet_number) {
     return client_maker_.MakeAckAndRstPacket(
         packet_number, !kIncludeVersion, stream_id_,
-        quic::QUIC_STREAM_CANCELLED, 2, 1, 2, !kIncludeCongestionFeedback);
+        quic::QUIC_STREAM_CANCELLED, 2, 1, 2);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructClientAckPacket(
@@ -549,8 +548,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       uint64_t smallest_received,
       uint64_t least_unacked) {
     return client_maker_.MakeAckPacket(packet_number, largest_received,
-                                       smallest_received, least_unacked,
-                                       !kIncludeCongestionFeedback);
+                                       smallest_received, least_unacked);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerAckPacket(
@@ -559,8 +557,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       uint64_t smallest_received,
       uint64_t least_unacked) {
     return server_maker_.MakeAckPacket(packet_number, largest_received,
-                                       smallest_received, least_unacked,
-                                       !kIncludeCongestionFeedback);
+                                       smallest_received, least_unacked);
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructInitialSettingsPacket() {
@@ -1632,7 +1629,6 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestAbortedByResetStream) {
         packet_number++,
         /* include_version = */ false, stream_id_,
         quic::QUIC_RST_ACKNOWLEDGEMENT, 4, 1, 1,
-        /* send_feedback = */ false,
         /* include_stop_sending_if_v99 = */ false));
   }
 
