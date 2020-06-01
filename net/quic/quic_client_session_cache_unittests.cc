@@ -121,11 +121,7 @@ static const char kCachedSession[] =
 }  // namespace
 
 // https://crbug.com/1088365
-#if defined(OS_FUCHSIA) || defined(OS_MACOSX) || defined(OS_CHROMEOS)
 #define MAYBE_QuicClientSessionCacheTest DISABLED_QuicClientSessionCacheTest
-#else
-#define MAYBE_QuicClientSessionCacheTest QuicClientSessionCacheTest
-#endif
 class MAYBE_QuicClientSessionCacheTest : public testing::Test {
  public:
   MAYBE_QuicClientSessionCacheTest() : ssl_ctx_(SSL_CTX_new(TLS_method())) {}
