@@ -304,6 +304,18 @@ void MockCryptoClientStream::SetConfigNegotiated() {
   config.SetInitialMaxStreamDataBytesUnidirectionalToSend(
       quic::kMinimumFlowControlSendWindow);
 
+  if (session()->version().AuthenticatesHandshakeConnectionIds()) {
+    if (session()->perspective() == Perspective::IS_CLIENT) {
+      config.SetOriginalConnectionIdToSend(
+          session()->connection()->connection_id());
+      config.SetInitialSourceConnectionIdToSend(
+          session()->connection()->connection_id());
+    } else {
+      config.SetInitialSourceConnectionIdToSend(
+          session()->connection()->client_connection_id());
+    }
+  }
+
   QuicErrorCode error;
   std::string error_details;
   if (session()->connection()->version().handshake_protocol ==
