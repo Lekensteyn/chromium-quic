@@ -3614,8 +3614,7 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNoOpenStreams(
   QuicChromiumClientSession* session = GetActiveSession(host_port_pair_);
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
   EXPECT_TRUE(HasActiveSession(host_port_pair_));
-  EXPECT_EQ(0u, session->GetNumActiveStreams());
-  EXPECT_EQ(0u, session->GetNumDrainingStreams());
+  EXPECT_FALSE(session->HasActiveRequestStreams());
 
   // Trigger connection migration.
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -5244,7 +5243,7 @@ void QuicStreamFactoryTestBase::TestMigrateSessionWithDrainingStream(
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
   EXPECT_TRUE(HasActiveSession(host_port_pair_));
   EXPECT_EQ(0u, session->GetNumActiveStreams());
-  EXPECT_EQ(1u, session->GetNumDrainingStreams());
+  EXPECT_TRUE(session->HasActiveRequestStreams());
 
   // There should be three pending tasks, the nearest one will complete
   // migration to the new network.
