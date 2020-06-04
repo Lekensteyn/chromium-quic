@@ -826,8 +826,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       wait_for_new_network_(false),
       ignore_read_error_(false),
       headers_include_h2_stream_dependency_(
-          headers_include_h2_stream_dependency &&
-          this->connection()->transport_version() >= quic::QUIC_VERSION_43),
+          headers_include_h2_stream_dependency),
       max_allowed_push_id_(max_allowed_push_id) {
   // Make sure connection migration and goaway on path degrading are not turned
   // on at the same time.
